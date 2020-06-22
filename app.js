@@ -1,0 +1,1 @@
+viewer = new Cesium.ViewerMixin('cesiumContainer');

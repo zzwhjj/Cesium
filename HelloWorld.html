@@ -47,6 +47,19 @@
     //显示帧速
     viewer.scene.debugShowFramesPerSecond = true;
 
+    //通过Entity添加形状
+    var redBox = viewer.entities.add ({
+        name: 'Red box with black outline',
+        position: Cesium.Cartesian3.fromDegrees(-107.0, 40.0, 300000.0),
+        box: {
+            dimensions: new Cesium.Cartesian3(400000.0, 300000.0, 500000.0),
+            material: Cesium.Color.RED.withAlpha(0.5),
+            outline: true,
+            outlineColor: Cesium.Color.BLACK
+        }
+    });
+    viewer.zoomTo(viewer.entities);
+
 </script>
 </body>
 </html>

@@ -32,22 +32,21 @@
         timeline:false,
         fullscreenButton:false,
         vrButton:false,
-        // skyBox : new Cesium.SkyBox({
-        //     sources : {
-        //     positiveX : 'stars/TychoSkymapII.t3_08192x04096_80_px.jpg',
-        //     negativeX : 'stars/TychoSkymapII.t3_08192x04096_80_mx.jpg',
-        //     positiveY : 'stars/TychoSkymapII.t3_08192x04096_80_py.jpg',
-        //     negativeY : 'stars/TychoSkymapII.t3_08192x04096_80_my.jpg',
-        //     positiveZ : 'stars/TychoSkymapII.t3_08192x04096_80_pz.jpg',
-        //     negativeZ : 'stars/TychoSkymapII.t3_08192x04096_80_mz.jpg'
-        //     }
-        // })
     });
 
     //显示帧速
     viewer.scene.debugShowFramesPerSecond = true;
 
     //通过Entity添加立方体
+    var blueBox = viewer.entities.add ({
+        name: "Blue Box",
+        position: Cesium.Cartesian3.fromDegrees(-114.0, 40.0, 300000.0),
+        box: {
+            dimensions: new Cesium.Cartesian3(400000.0, 300000.0, 500000.0),
+            material: Cesium.Color.BLUE,
+        },
+    });
+
     var redBox = viewer.entities.add ({
         name: 'Red box with black outline',
         position: Cesium.Cartesian3.fromDegrees(-107.0, 40.0, 300000.0),
@@ -56,8 +55,56 @@
             material: Cesium.Color.RED.withAlpha(0.5),
             outline: true,
             outlineColor: Cesium.Color.BLACK
-        }
+        },
     });
+
+    var outlineOnly = viewer.entities.add({
+        name: "Yellow box outline",
+        position: Cesium.Cartesian3.fromDegrees(-100.0, 40.0, 300000.0),
+        box: {
+            dimensions: new Cesium.Cartesian3(400000.0, 300000.0, 500000.0),
+            fill: false,
+            outline: true,
+            outlineColor: Cesium.Color.YELLOW,
+        },
+    });
+
+    //绘制椭圆
+    var greenCircle = viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(-111.0, 40.0, 150000.0),
+        name: "Green circle at height with outline",
+        ellipse: {
+            semiMinorAxis: 300000.0,
+            semiMajorAxis: 300000.0,
+            height: 200000.0,
+            material: Cesium.Color.GREEN,
+            outline: true,
+        },
+    });
+
+    var redEllipse = viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(-103.0, 40.0),
+        name: "Red ellipse on surface",
+        ellipse: {
+            semiMinorAxis: 250000.0,
+            semiMajorAxis: 400000.0,
+            material: Cesium.Color.RED.withAlpha(0.5),
+        },
+    });
+
+    var blueEllipse = viewer.entities.add({
+        position:Cesium.Cartesian3.fromDegrees(-95.0, 40.0, 100000.0),
+        name: "Blue translucent, rotated, and extruded ellipse with outline",
+        ellipse: {
+            semiMinorAxis: 150000.0,
+            semiMajorAxis: 300000.0,
+            extrudedHeight: 200000.0,
+            rotation: Cesium.Math.toRadians(45),
+            material: Cesium.Color.BLUE.withAlpha(0.5),
+            outline: true,
+        },
+    });
+
     viewer.zoomTo(viewer.entities);
 
 </script>

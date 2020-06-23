@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-    <title>通过Entity添加立方体</title>
+    <title>通过Entity添加椭圆</title>
     <script src="./Cesium/Cesium.js"></script>
     <style>
         @import url(./Cesium/Widgets/widgets.css);
@@ -36,38 +36,6 @@
 
     //显示帧速
     viewer.scene.debugShowFramesPerSecond = true;
-
-    //通过Entity添加立方体
-    var blueBox = viewer.entities.add ({
-        name: "Blue Box",
-        position: Cesium.Cartesian3.fromDegrees(-114.0, 40.0, 300000.0),
-        box: {
-            dimensions: new Cesium.Cartesian3(400000.0, 300000.0, 500000.0),
-            material: Cesium.Color.BLUE,
-        },
-    });
-
-    var redBox = viewer.entities.add ({
-        name: 'Red box with black outline',
-        position: Cesium.Cartesian3.fromDegrees(-107.0, 40.0, 300000.0),
-        box: {
-            dimensions: new Cesium.Cartesian3(400000.0, 300000.0, 500000.0),
-            material: Cesium.Color.RED.withAlpha(0.5),
-            outline: true,
-            outlineColor: Cesium.Color.BLACK
-        },
-    });
-
-    var outlineOnly = viewer.entities.add({
-        name: "Yellow box outline",
-        position: Cesium.Cartesian3.fromDegrees(-100.0, 40.0, 300000.0),
-        box: {
-            dimensions: new Cesium.Cartesian3(400000.0, 300000.0, 500000.0),
-            fill: false,
-            outline: true,
-            outlineColor: Cesium.Color.YELLOW,
-        },
-    });
 
     //绘制椭圆
     var greenCircle = viewer.entities.add({

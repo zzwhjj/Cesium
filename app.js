@@ -1,1 +1,1 @@
-viewer = new Cesium.ViewerMixin('cesiumContainer');
+viewer = new Cesium.Viewer('cesiumContainer');

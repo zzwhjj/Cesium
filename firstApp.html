@@ -98,8 +98,25 @@
             Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1MzM4NmZmYy1iZGZkLTQ4NTAtOTY4Yy00MzRhZDY2NDg0ZGMiLCJpZCI6Mjg1NzIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1OTEyMjYyMjl9.76gEZ0UkixKDZ8d-j8AxR1YAi_l7kBbED6zd71cFkYw';
 
             var viewer = new Cesium.Viewer('cesiumContainer', {
-                terrainProvider: Cesium.createWorldTerrain()
+                //terrainProvider: Cesium.createWorldTerrain()，
+                imageProvider: Cesium.createWorldImagery({
+                    style: Cesium.IonWorldImageryStyle.AERIAL_WITH_LABELS,
+                }),
+                baseLayerPicker: false,
             });
+
+            var layers = viewer.scene.imageryLayers;
+            var blackMarble = layers.addImageryProvider(
+                new Cesium.IonImageryProvider({assetId: 3812})
+            );
+            blackMarble.alpha = 0.5;
+            blackMarble.brightness = 2.0;
+            layers.addImageryProvider(
+                new Cesium.SingleTileImageryProvider({
+                    url: "./images/Cesium_Logo_overlay.png",
+                    rectangle: Cesium.Rectangle.fromDegrees(-75.0, 28.0, -67.0, 29.75),
+                })
+            );
 
             var imageryLayers = viewer.imageryLayers;
 

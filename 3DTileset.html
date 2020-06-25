@@ -9,10 +9,10 @@
     <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
     <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-    <title>通过Entity添加墙</title>
-    <script src="./Cesium/Cesium.js"></script>
+    <title>3DTiles</title>
+    <script src="./Build/CesiumUnminified/Cesium.js"></script>
     <style>
-        @import url(./Cesium/Widgets/widgets.css);
+        @import url(./Build/CesiumUnminified/Widgets/widgets.css);
 
         html,
         body,
@@ -32,15 +32,29 @@
     </div>
     <script>
         var viewer = new Cesium.Viewer('cesiumContainer', {
-           terrainProvider: Cesium.createWorldTerrain(),
+            terrainProvider: Cesium.createWorldTerrain(),
         });
 
-        var tileset = new Cesium.Cesium3DTileset({
-            url: Cesium.IonResource.fromAssetId(40866),
+        //Load the NYC buildings tileset
+        var city = new Cesium.Cesium3DTileset({
+            url: Cesium.IonResource.fromAssetId(3839),
         });
 
-        viewer.scene.primitives.add(tileset);
-        viewer.zoomTo(tileset);
+        viewer.scene.primitives.add(city);
+
+        //Adjust the tileset height so its not floating above terrain
+        var heightOffset = -32;
+        city.readyPromise.then(function(tileset) {
+            //Position tileset
+            var boundingSphere = tileset.boundingSphere;
+            var cartographic = Cesium.Cartographic.fromCartesian(boundingSphere.center);
+            var surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
+            var offset = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, heightOffset);
+            var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
+            tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+        });
+
+        viewer.zoomTo(city);
     </script>
 </body>
 

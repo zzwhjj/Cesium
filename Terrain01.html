@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <meta name="description" content="Adjust brightness, contrast, hue, saturation and gamma of an imagery layer.">
+    <meta name="cesium-sandcastle-labels" content="Showcases">
+    <title>3D Earth</title>
+    <style type="text/javascript" src="./Build/CesiumUnminified/Apps/Sandcastle-header.js"></style>
+    <script type="text/javascript" src="./Build/CesiumUnminified/Cesium.js"></script>
+    <style>
+        @import url(./Cesium/Widgets/widgets.css);
+
+        html,
+        body,
+        #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <style>
+        @import url(./Build/CesiumUnminified/Apps/Sandcastle/templates/bucket.css);
+
+        #toolbar {
+            background: rgba(42, 42, 42, 0.8);
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        #toolbar input {
+            vertical-align: middle;
+            padding-top: 2px;
+            padding-bottom: 2px;
+        }
+
+        #toolbar tr {
+            transform: translateY(0);
+            transition: transform 0.4s ease-out;
+        }
+
+        #toolbar table tr.up {
+            transform: translateY(33px);
+            transition: none;
+        }
+
+        #toolbar table tr.down {
+            transform: translateY(-33px);
+            transition: none;
+        }
+    </style>
+    <div id="cesiumContainer" class="fullSize"></div>
+    <div id="loadingOverlay">
+        <h1>Loading...</h1>
+    </div>
+    <div id="toolbar">
+    </div>
+
+    <script id="cesium-sandcastle-script">
+        function startup(Cesium) {
+            'use strict';
+            //Sandcastle_begin
+            Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1MzM4NmZmYy1iZGZkLTQ4NTAtOTY4Yy00MzRhZDY2NDg0ZGMiLCJpZCI6Mjg1NzIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1OTEyMjYyMjl9.76gEZ0UkixKDZ8d-j8AxR1YAi_l7kBbED6zd71cFkYw';
+
+            var viewer = new Cesium.Viewer('cesiumContainer', {
+                terrainProvider: Cesium.createWorldTerrain({
+                    requestVertexNormals: true
+                })
+            });
+
+            //Enable lighting based on sun/moon positions
+            viewer.scene.globe.enableLighting = true;
+
+            //Create an initial camera view
+            var initialPosition = new Cesium.Cartesian3.fromDegrees(-73.998114468289017509, 40.674512895646692812, 2631.082799425431);
+            var initialOrientation = new Cesium.HeadingPitchRoll.fromDegrees(7.1077496389876024807, -31.987223091598949054, 0.025883251314954971306);
+            var homeCameraView = {
+                destination: initialPosition,
+                orientation: {
+                    heading: initialOrientation.heading,
+                    pitch: initialOrientation.pitch,
+                    roll: initialOrientation.roll
+                }
+            };
+
+            //add some camera flight animation options
+            homeCameraView.duration = 2.0;
+            homeCameraView.maximumHeight = 2000;
+            homeCameraView.pitchAdjustHeight = 2000;
+            homeCameraView.endTransform = Cesium.Matrix4.IDENTITY;
+
+            //override the default home button
+            viewer.homeButton.viewModel.command.beforeExecute.addEventListener(function(e){
+                e.cancel = true;
+                viewer.scene.camera.flyTo(homeCameraView);
+            });
+
+            viewer.scene.camera.setView(homeCameraView);
+
+            //set up clock and timeline
+            viewer.clock.shouldAnimate = true; //make the animation play when the viewer starts
+            viewer.clock.startTime = Cesium.JulianDate.fromIso8601("2017-07-11T16:00:00Z");
+            viewer.clock.stopTime = Cesium.JulianDate.fromIso8601("2017-07-11T16:20:00Z");
+            viewer.clock.currentTime = Cesium.JulianDate.fromIso8601("2017-07-11T16:00:00Z");
+            viewer.clock.multiplier = 2; //sets a speedup
+            viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER; //tick computation mode
+            viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP; //loop at the end
+            viewer.timeline.zoomTo(viewer.clock.startTime, viewer.clock.stopTime);//set visible range            
+
+            //Sandcastle_End
+            Sandcastle.finishedLoading();
+        }
+        if (typeof Cesium !== 'undefined') {
+            window.startupCalled = true;
+            startup(Cesium);
+        }
+    </script>
+</body>
+
+</html>

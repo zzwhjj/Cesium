@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Use correct character set. -->
+    <meta charset="utf-8">
+    <!-- Tell IE to use the latest, best version -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <meta name="description" content="Adjust brightness, contrast, hue, saturation and gamma of an imagery layer.">
+    <meta name="cesium-sandcastle-labels" content="Showcases">
+    <title>3D Earth</title>
+    <script type="text/javascript" src="./Build/CesiumUnminified/Cesium.js"></script>
+    <style type="text/javascript" src="./Build/CesiumUnminified/Apps/Sandcastle-header.js"></style>
+    <style>
+        @import url(./Build/CesiumUnminified/Widgets/widgets.css);
+
+        html,
+        body,
+        #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #getPosition {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 600px;
+            background-color: gray;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="cesiumContainer"></div>
+    <div id="loadingOverlay">
+        <h1>Loading...</h1>
+    </div>
+    <div id="toolbar">
+    </div>
+    <script src="getposition.js"></script>
+    <div id = "getposition">
+        <input type="button" value="x+" onclick="change(0)">
+        <input type="button" value="x-" onclick="change(1)">
+        <input type="button" value="y+" onclick="change(2)">
+        <input type="button" value="y-" onclick="change(3)">
+        <input type="button" value="z+" onclick="change(4)">
+        <input type="button" value="z-" onclick="change(5)">
+        <br />
+        <input type="button" value="rx" onclick="rotate(0)">
+
+        <input type="button" value="1" onclick="changeStep(1)">
+        <input type="button" value="10" onclick="changeStep(10)">
+        <input type="button" value="100" onclick="changeStep(100)">
+        <br />
+        <input type="button" value="vi" onclick="changevisible()">
+
+        <div id="result" style="background: white;"></div>
+    </div>
+
+    <!--
+    <script id="cesium-sandcastle-script">
+        function startup(Cesium) {
+            'use strict'
+            //Sandcastle_begin
+            Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1MzM4NmZmYy1iZGZkLTQ4NTAtOTY4Yy00MzRhZDY2NDg0ZGMiLCJpZCI6Mjg1NzIsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1OTEyMjYyMjl9.76gEZ0UkixKDZ8d-j8AxR1YAi_l7kBbED6zd71cFkYw';
+
+            var viewer = new Cesium.Viewer('cesiumContainer');
+
+            var scene = viewer.scene;
+
+            var tileset = scene.primitives.add(
+                new Cesium.Cesium3DTileset({
+                    url: Cesium.IonResource.fromAssetId(8564),
+                })
+            );
+
+            tileset.readyPromise.then(function (tileset) {
+                viewer.zoomTo(tileset, new Cesium.HeadingPitchRange(
+                    0.5, -0.2, tileset.boundingSphere.radius * 4.0
+                ));
+            }).otherwise(function (error) {
+                console.log(error);
+            });
+
+            tileset.colorBlendMode = Cesium.Cesium3DTilesetColorBlendMode.REPLACE;
+
+            var selectedFeature;
+            var picking = false;
+
+            Sandcastle.addToggleButton("Per-feature selection", false, function (checked) {
+                picking = checked;
+                if (!picking) {
+                    unselectFeature(selectedFeature);
+                }
+            });
+
+            function selectFeature(feature) {
+                var element = feature.getProperty("element");
+                setElementColor(element, Cesium.Color.YELLOW);
+                selectedFeature = feature;
+            }
+
+            function unselectFeature(feature) {
+                if (!Cesium.defined(feature)) {
+                    return;
+                }
+                var element = feature.getProperty("element");
+                setElementColor(element, Cesium.Color.WHITE);
+                if (feature === selectedFeature) {
+                    selectedFeature = undefined;
+                }
+            }
+
+            var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+            handler.setInputAction(function (movement) {
+                if (!picking) {
+                    return;
+                }
+
+                var feature = scene.pick(movement.endPosition);
+
+                unselectFeature(selectedFeature);
+
+                if (feature instanceof Cesium.Cesium3DTileFeature) {
+                    selectFeature(feature);
+                }
+            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+            // In this tileset every feature has an "element" property which is a global ID.
+            // This property is used to associate features across different tiles and LODs.
+            // Workaround until 3D Tiles has the concept of global batch ids: https://github.com/CesiumGS/3d-tiles/issues/265
+            var elementMap = {}; // Build a map of elements to features.
+            var hiddenElements = [
+                112001,
+                113180,
+                131136,
+                113167,
+                71309,
+                109652,
+                111178,
+                113156,
+                113170,
+                124846,
+                114076,
+                131122,
+                113179,
+                114325,
+                131134,
+                113164,
+                113153,
+                113179,
+                109656,
+                114095,
+                114093,
+                39225,
+                39267,
+                113149,
+                113071,
+                112003,
+                39229,
+                113160,
+                39227,
+                39234,
+                113985,
+                39230,
+                112004,
+                39223,
+            ];
+
+            function getElement(feature) {
+                return parseInt(feature.getProperty("element"), 10);
+            } 
+
+            function setElementColor(element, color) {
+                var featuresToColor = elementMap[element];
+                var length = featuresToColor.length;
+                for (var i = 0; i < length; i++) {
+                    var feature = featuresToColor[i];
+                    feature.color = Cesium.Color.clone(color, feature.color);
+                }
+            }
+
+            function unloadFeature(feature) {
+                unselectFeature(feature);
+                var element = getElement(feature);
+                var features = elementMap[element];
+                var index = features.indexof(feature);
+                if (index > -1) {
+                    features.splice(index, 1);
+                }
+            }
+
+            function loadFeature(feature) {
+                var element = getElement(feature);
+                var features = elementMap[element];
+                if (!Cesium.defined(features)) {
+                    features = [];
+                    elementMap[element] = features;
+                }
+                features.push(feature);
+
+                if (hiddenElements.indexOf(element) > -1) {
+                    feature.show = false;
+                }
+            }
+
+            function processContentFeatures(content, callback) {
+                var featuresLength = content.featuresLength;
+                for (var i = 0; i < featuresLength; i++) {
+                    var feature = content.getFeature(i);
+                    callback(feature);
+                }
+            }
+
+            function processTileFeatures(tile, callback) {
+                var content = tile.content;
+                var innerContents = content.innerContents;
+                if (Cesium.defined(innerContents)) {
+                    var length = innerContents.length;
+                    for (var i = 0; i < length; i++) {
+                        processContentFeatures(innerContents[i], callback);
+                    }
+                } else {
+                    processContentFeatures(content, callback);
+                }
+            }
+
+            tileset.tileLoad.addEventListener(function (tile) {
+                processTileFeatures(tile, loadFeature);
+            });
+
+            tileset.tileUnload.addEventListener(function (tile) {
+                processTileFeatures(tile, unloadFeature);
+            });
+
+            viewer.zoomTo(tileset);
+
+            //Sandcastle_End
+            Sandcastle.finishedLoading();
+        }
+        if (typeof Cesium !== 'undefined') {
+            window.startupCalled = true;
+            startup(Cesium);
+        }
+    </script>
+    -->
+</body>
+
+</html>
